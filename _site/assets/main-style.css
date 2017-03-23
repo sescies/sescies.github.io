@@ -1,0 +1,36 @@
+	.resumeStyle dt{
+		font-size:18px;
+		line-height: 30px;
+	}
+
+	.subnavStyle{
+		font-size:16px;
+		color: #fff;
+	}
+
+	html {
+		height: 100%;
+	}
+	body {
+  	min-height: 100%;
+  	display: flex;
+  	flex-direction: column;
+	}
+
+	.content{
+		flex: 1;
+		width:100%;
+	}
+
+	.footer {
+		width: 100%;
+		background-color: rgb(90, 90, 90);
+		margin-top: 30px;
+	}
+
+	.header{
+		-webkit-box-shadow: 0px 3px 10px #DDDDDD;
+		-moz-box-shadow: 0px 3px 10px #DDDDDD;
+		box-shadow: 0px 3px 10px #DDDDDD;
+		margin-bottom: 30px;
+	}

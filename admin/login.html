@@ -1,0 +1,137 @@
+---
+title: 登入
+permalink: admin/login.html
+---
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {% include head.html %}
+
+  <body>
+    {% include initFacebookAPI.html %}
+
+    {% include header.html %}
+
+    <div class="content">
+      <div class="uk-container">
+        <div style="margin-top:15%;">
+          <div id="loginDiv" style="text-align:center;display:none;">
+            <h3>使用Facebook登入</h3>
+            <button class="uk-button uk-button-primary uk-button-large" onclick="fbLogin();"><li uk-icon="icon: facebook;"></li>登入</button>
+          </div>
+          <div id="regDiv" style="text-align:center;display:none;">
+            <h3>尚未申請會員</h3>
+            <p><button class="uk-button uk-button-primary uk-button-large" onclick="register();"><li uk-icon="icon: facebook;"></li>使用Facebook帳號申請</button></p>
+            <p><button class="uk-button uk-button-default uk-button-large" onclick="window.location='../';">回首頁</button></p>
+            <p><div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true"></div></p>
+          </div>
+          <div id="regedDiv" style="text-align:center;display:none;">
+            <h2>註冊申請已送出</h2>
+            <h3>正在等候審核</h3>
+            <p><button class="uk-button uk-button-primary uk-button-large" onclick="window.location='../';">回首頁</button></p>
+            <p><div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true"></div></p>
+          </div>
+          <div id="context" style="text-align:center;display:none;">
+
+          </div>
+          <div id="loadingDiv" style="text-align:center;">
+            {% include facebook_loading.svg %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include footer.html %}
+    {% include js_include.html %}
+
+    {% include facebookLoginAPI.html %}
+    <script language="javascript">
+      function switchTo(pattern){
+        var patterns = ["loginDiv", "regDiv", "regedDiv", "context", "loadingDiv"];
+        for(var i = 0; i < patterns.length; i++){
+          if(pattern == patterns[i]){
+            $("#"+patterns[i]).show();
+          }else{
+            $("#"+patterns[i]).hide();
+          }
+        }
+      }
+
+
+      function statusChangeCallback(response){
+        console.log(response);
+        if(response !== null && response.status === 'connected'){
+          $.ajax({
+             url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+             type: 'GET',
+             data: {
+               "token" : response.authResponse.accessToken,
+               "action" : "login",
+             },
+              error: function(xhr) {
+                console.error('Ajax request 發生錯誤');
+                switchTo('context');
+                $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+              },
+              success: function(response) {
+                var json = JSON.parse(response);
+                console.log(json);
+                if(json.isAccepted === true){
+                  switchTo('loadingDiv');
+                  window.location.replace("./");
+                }else{
+                  if(json.isRegistered){
+                    switchTo('regedDiv');
+                  }else{
+                    switchTo('regDiv');
+                  }
+                }
+              }
+            });
+        }else{
+          switchTo('loginDiv');
+        }
+      }
+
+      function register(){
+        switchTo('loadingDiv');
+        FB.getLoginStatus(function(response) {
+          $.ajax({
+             url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+             type: 'GET',
+             data: {
+               "token" : response.authResponse.accessToken,
+               "action" : "register",
+             },
+              error: function(xhr) {
+                console.error('Ajax request 發生錯誤');
+                switchTo('context');
+                $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+              },
+              success: function(response) {
+                if(response === "true"){
+                  switchTo('regedDiv');
+                }else if(response === "false"){
+                  $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                  switchTo('context');
+                }else{
+                  var json = JSON.parse(response);
+                  if(json.isAccepted === true){
+                    switchTo('loadingDiv');
+                    window.location.replace("./");
+                  }else{
+                    if(json.isRegistered){
+                      switchTo('regedDiv');
+                    }else{
+                      switchTo('regDiv');
+                    }
+                  }
+                }
+              }
+            });
+        });
+      }
+    </script>
+  </body>
+
+</html>

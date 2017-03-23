@@ -1,0 +1,13 @@
+<script language="javascript">
+  function fbLogin(){
+    FB.login(function(response){
+      statusChangeCallback(response);
+    }, {scope: 'public_profile,email'});
+  }
+
+  function fbLogout(){
+    FB.logout(function(){
+      statusChangeCallback(null);
+    });
+  }
+</script>

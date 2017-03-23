@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>歡迎來到Jekyll!!</title>
+  <!--<meta name="description" content="You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different wa...">-->
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/2017/03/19/welcome-to-jekyll.html">
+  <link rel="alternate" type="application/rss+xml" title="SESCies" href="/feed.xml">
+  <!--custom css-->
+  <link rel="stylesheet" href="/assets/main-style.css">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/table.css">
+  <!--prism-->
+  <link rel="stylesheet" href="/assets/prism/prism.css">
+  <!--uikit css-->
+  <link rel="stylesheet" href="/assets/uikit/css/uikit.min.css">
+
+  <!--jquery-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <!--<script src="/assets/js/jquery-3.1.1.min.js"></script>-->
+
+  <!--uikit javascript-->
+  <!--<script src="/assets/uikit/js/uikit.min.js"></script>
+  <script src="/assets/uikit/js/uikit-icons.min.js"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.18/js/uikit.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.18/js/uikit-icons.min.js"></script>
+
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+</head>
+
+
+  <body>
+
+    <div class="header">
+  <div class="uk-container">
+    <div class="uk-navbar">
+      <div class="uk-navbar-left">
+        <a class="site-title" href="/">SESCies</a>
+      </div>
+      <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav">
+          <li class="uk-active">
+            <a href="../admin/login.html">登入</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="content">
+      <div class="uk-container">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">歡迎來到Jekyll!!</h1>
+    <p class="post-meta"><time datetime="2017-03-19T08:44:37+08:00" itemprop="datePublished">Mar 19, 2017</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>You’ll find this post in your <code class="highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+
+<p>To add new posts, simply add a file in the <code class="highlighter-rouge">_posts</code> directory that follows the convention <code class="highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+
+<p>Jekyll also offers powerful support for code snippets:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
+<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
+
+<p>Easy (and free!) You should check out our premium features.</p>
+
+<h1 id="123">123</h1>
+
+<table>
+  <tbody>
+    <tr>
+      <td>123</td>
+      <td>123</td>
+      <td>123</td>
+    </tr>
+    <tr>
+      <td>321</td>
+      <td>321</td>
+      <td>321</td>
+    </tr>
+    <tr>
+      <td>789</td>
+      <td>789</td>
+      <td>789</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">marked</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'marked'</span><span class="p">);</span>
+<span class="nx">marked</span><span class="p">.</span><span class="nx">setOptions</span><span class="p">({</span>
+  <span class="na">renderer</span><span class="p">:</span> <span class="k">new</span> <span class="nx">marked</span><span class="p">.</span><span class="nx">Renderer</span><span class="p">(),</span>
+  <span class="na">gfm</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">tables</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">breaks</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="na">pedantic</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="na">sanitize</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="na">smartLists</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="na">smartypants</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">marked</span><span class="p">(</span><span class="s1">'I am using __markdown__.'</span><span class="p">));</span>
+</code></pre>
+</div>
+
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </div>
+
+    <div class="footer uk-light">
+      <div class="uk-container">
+        <div style="height:10px;"></div>
+        <ul class="uk-subnav uk-subnav-divider">
+          <li><a target="_blank" href="#" uk-icon="icon: facebook; ratio: 2"></a></li>
+          <li><a target="_blank" href="https://github.com/sescies" uk-icon="icon: github; ratio: 2"></a></li>
+        </ul>
+        <div class="uk-grid-match uk-child-width-1-2@m" uk-grid>
+          <div>
+            <h3>關於</h3>
+            <ui>
+              <li>By Li-Xian Chen @ NIU CSIE</li>
+              <li>使用創用CC授權 (By-NC)</li>
+              <li>
+                <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc/3.0/tw/"><img alt="創用 CC 授權條款" style="border-width:0" src="/assets/images/cc.png" /></a>
+              </li>
+            </ui>
+          </div>
+
+          <div>
+            <h3 style="color:#fff;">技術</h3>
+            <ui>
+              <li>以 <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> 為基底開發</li>
+              <li>CSS採用 <a href="https://getuikit.com/" target="_blank">UIkit3</a> 配置</li>
+              <li>最低支援至Internet Explorer 10</li>
+            </ui>
+          </div>
+          <div>
+
+          </div>
+        </div>
+        <br/>
+      </div>
+    </div>
+
+    <script src="/assets/prism/prism.js"></script>
+
+  </body>
+
+</html>

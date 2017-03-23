@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {% include head.html %}
+
+  <body>
+    {% include initFacebookAPI.html %}
+
+    {% include admin_header.html %}
+
+    <div class="content">
+      <div class="uk-container">
+        <div style="margin-top:20px;">
+          <div id="loadingDiv" style="text-align:center;">
+            {% include facebook_loading.svg %}
+          </div>
+          <div id="context" style="display:none;">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include footer.html %}
+    {% include js_include.html %}
+
+    {% include facebookLoginAPI.html %}
+    <script language="javascript">
+      function statusChangeCallback(response){
+        console.log(response);
+        if(response !== null && response.status === 'connected'){
+          checkUser();
+        }else{
+          $("#loadingDiv").show();
+          window.location.replace("./login.html");
+        }
+      }
+
+      function getPageName(){
+        var url = window.location;
+        if (url){
+          var m = url.toString().match(/.*\/(.+?)\./);
+          if (m && m.length > 1){
+            return m[1];
+          }
+        }
+        return "";
+      }
+
+      function checkUser(){
+        FB.getLoginStatus(function(response) {
+          $.ajax({
+             url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+             type: 'GET',
+             data: {
+               "token" : response.authResponse.accessToken,
+               "action" : "login",
+             },
+              error: function(xhr) {
+                console.error('Ajax request 發生錯誤');
+                $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                $('#loadingDiv').hide();
+              },
+              success: function(response) {
+                var json = JSON.parse(response);
+                if(json.isAccepted === true){
+                  $('#loadingDiv').hide();
+                  $("#context").show();
+                }else{
+                  window.location.replace("./login.html");
+                }
+              }
+            });
+        });
+      }
+
+      $(document).ready(function() {
+        pjax(getPageName());
+      });
+
+      function pjax(page){
+        $.ajax({
+          xhr: function(){
+            var xhr = new window.XMLHttpRequest();
+            //Download progress
+            xhr.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                var percentComplete = evt.loaded / evt.total;
+                //Do something with download progress
+                console.log("download : "+percentComplete);
+              }
+            }, false);
+            return xhr;
+          },
+           url: "./pages/" + page,
+           type: 'GET',
+            error: function(xhr) {
+              console.error('Ajax request 發生錯誤');
+              $('#context').html('<div style="text-align:center;"><h2>'+xhr.status+'</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+              $('#loadingDiv').hide();
+            },
+            success: function(response) {
+              $('#context').html(response);
+            }
+          });
+      }
+    </script>
+  </body>
+
+</html>

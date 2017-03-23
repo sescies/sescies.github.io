@@ -1,0 +1,16 @@
+  <!--Editor-->
+  <script src="../assets/tinymce/tinymce.min.js"></script>
+  <script src="../assets/js/to-markdown.js"></script>
+  <script src="../assets/js/marked.js"></script>
+
+  <script>
+    tinymce.init({
+      mode : "none",
+      //selector:'textarea',
+      plugins: 'codesample image link table textcolor colorpicker',
+      toolbar: "undo redo | formatselect | bold  italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify alignnone | bullist numlist indent outdent | table | link | image | codesample",
+      language: 'zh_TW',
+      resize: false,
+      height: '350',
+    });
+  </script>
