@@ -9,7 +9,7 @@ layout: default
   {{ content }}
 
   <ul class="post-list">
-    {% for post in site.posts %}
+    {% for post in paginator.posts %}
       <li>
         <h2>
           <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
@@ -18,6 +18,21 @@ layout: default
         <hr/>
       </li>
     {% endfor %}
+  </ul>
+  
+  <!-- Pagination links -->
+  <ul class="uk-pagination uk-flex-center" uk-margin>
+	{% if paginator.previous_page %}
+    <li><a href="{{ paginator.previous_page_path }}"><span uk-pagination-previous></span>上一頁</a></li>
+	{% else %}
+	<li class="uk-disabled"><a href="#"><span uk-pagination-previous></span>上一頁</a></li>
+	{% endif %}
+    <li class="uk-disabled"><span>Page: {{ paginator.page }} of {{ paginator.total_pages }}</span></li>
+	{% if paginator.next_page %}
+    <li><a href="{{ paginator.next_page_path }}"><span uk-pagination-next></span>下一頁</a></li>
+	{% else %}
+	<li class="uk-disabled"><a href="#"><span uk-pagination-next></span>下一頁</a></li>
+	{% endif %}
   </ul>
 
 </div>
