@@ -1,2 +1,2 @@
 # sescies.github.io
-Web site for the plan.
+Website for the plan.
