@@ -17,7 +17,7 @@ layout: default
         {% if post.author %}
         <span class="post-meta">作者 :  {{ post.author }} | </span>
         {% endif %}
-        <span class="post-meta">發表於 {{ post.date | date: "%Y-%-m-%-d" }}</span>
+        <span class="post-meta">發表於 {{ post.date | date: "%F %X" }}</span>
         <hr/>
       </li>
     {% endfor %}
