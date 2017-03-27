@@ -1,25 +1,41 @@
-            <p><input class="uk-input" type="text" placeholder="標題"></p>
-            <p><textarea id="text"></textarea></p>
+            <div id="alertCover" class="uk-alert-primary" uk-alert style="display:none;">
+              <p id="message"></p>
+            </div>
+            <div id="form">
+              <p><input id="post_title" class="uk-input" type="text" placeholder="標題"></p>
+              <p><textarea id="text"></textarea></p>
+              <p>
+                <button id="post_button" class="uk-button uk-button-primary" onclick="startUpload();">發表文章</button>
+                <span id="post_loading" style="display:none;"><sapn uk-spinner></sapn>正在發表文章</span>
+              </p>
+            </div>
 
             <script language="javascript">
               tinyMCE.execCommand('mceAddEditor', false, 'text');
-              $("#loadingDiv").click(function(event) {
-                var content = tinyMCE.get('text').getContent();
-                console.log(content);
-                console.log(btoa(content));
-              });
 
-              var time = new Date().toString();
-              var data = {
-                "description": "the description for this gist",
-                "public": true,
-                "files": {
-                  "file1.txt": {
-                    "content": "String file contents"
+              function startUpload(){
+                $("#alertCover").hide();
+                turnOnForm(false);
+
+                var title = $("#post_title").val();
+                var content = tinyMCE.get('text').getContent();
+                if(title.replace(/\s/gi, "") == "" || content.replace(/\s/gi, "") == ""){
+                  showMessage('warning', '標題和文章內容都不能為空!');
+                  turnOnForm(true);
+                  return;
+                }
+
+                var time = new Date().toString();
+                var data = {
+                  "description": "Temp",
+                  "public": true,
+                  "files": {
+                    "file.txt": {
+                      "content": content
+                    }
                   }
                 }
-              }
-              function startUpload(){
+
                 $.ajax({
                    url: "https://api.github.com/gists",
                    type: 'POST',
@@ -30,8 +46,85 @@
                       $('#loadingDiv').hide();
                     },
                     success: function(response) {
+                      console.log("GIST");
                       console.log(response);
+                      var files = response.files;
+                      var raw_url = "";
+                      for(var i in files){
+                        if(files[i]){
+                          raw_url = files[i].raw_url;
+                        }
+                      }
+                      addNewPost(raw_url, title);
                     }
                   });
+              }
+
+              function addNewPost(gistURL, title){
+                FB.getLoginStatus(function(response) {
+                  $.ajax({
+                     url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+                     type: 'GET',
+                     data: {
+                       "token" : response.authResponse.accessToken,
+                       "action" : "newPost",
+                       "gistURL" : encodeURIComponent(gistURL),
+                       "title" : title,
+                     },
+                      error: function(xhr) {
+                        console.error('Ajax request 發生錯誤');
+                        $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                      },
+                      success: function(response) {
+                        console.log("GOOGLE");
+                        console.log(response);
+                        if(response === "false"){
+                          //$('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                        }else{
+                          var json = JSON.parse(response);
+                          showMessage('primary', '文章發表成功!<a href="'+json.url+'">檢視文章</a>');
+                        }
+                      }
+                    });
+                });
+              }
+
+              //@Param {boolean} true : 開啟編輯器 ; false : 關閉編輯器
+              function turnOnForm(turnOn){
+                if(turnOn){
+                  $("#post_loading").hide();
+                  $("#post_title").prop('disabled', false);
+                  tinyMCE.get('text').setMode('design');
+                  $("#post_button").prop('disabled', false);
+                }else{
+                  $("#post_loading").show();
+                  $("#post_title").prop('disabled', true);
+                  tinyMCE.get('text').setMode('readonly');
+                  $("#post_button").prop('disabled', true);
+                }
+              }
+
+              /*
+               * 顯示訊息
+               * @Param {string} level 訊息等級 分為 primary, success, warning, danger
+               * @Param {string} message 訊息
+               */
+              function showMessage(level, message){
+                $("#hello").removeClass (function (index, className) {
+                  return (className.match (/(^|\s)uk-alert-\S+/gi) || []).join(' ');
+                });
+                $("#alertCover").show();
+                if(level == "primary"){
+                  $("#alertCover").addClass('uk-alert-primary')
+                }else if(level == "success"){
+                  $("#alertCover").addClass('uk-alert-success')
+                }else if(level == "warning"){
+                  $("#alertCover").addClass('uk-alert-warning')
+                }else if(level == "danger"){
+                  $("#alertCover").addClass('uk-alert-danger')
+                }else{
+                  $("#alertCover").addClass('uk-alert-primary')
+                }
+                $("#message").html(message);
               }
             </script>

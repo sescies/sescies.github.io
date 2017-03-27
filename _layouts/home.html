@@ -14,12 +14,15 @@ layout: default
         <h2>
           <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
         </h2>
+        {% if post.author %}
+        <span class="post-meta">作者 :  {{ post.author }} | </span>
+        {% endif %}
         <span class="post-meta">發表於 {{ post.date | date: "%Y-%-m-%-d" }}</span>
         <hr/>
       </li>
     {% endfor %}
   </ul>
-  
+
   <!-- Pagination links -->
   <ul class="uk-pagination uk-flex-center" uk-margin>
 	{% if paginator.previous_page %}
