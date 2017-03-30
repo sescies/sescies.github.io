@@ -34,3 +34,14 @@
 		box-shadow: 0px 3px 10px #DDDDDD;
 		margin-bottom: 30px;
 	}
+
+	.processBar{
+		position:absolute;
+		background-color: #218EF1;
+		width:0%;
+		height:1px;
+		-webkit-box-shadow: 0px 3px 10px #218EF1;
+		-moz-box-shadow: 0px 3px 10px #218EF1;
+		box-shadow: 0px 3px 10px #218EF1;
+		margin-bottom: 30px;
+	}

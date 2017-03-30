@@ -1,0 +1,110 @@
+<div style="text-align:right;">
+  <button class="uk-button uk-button-primary" onclick="window.location='./editor.html'">發表文章</button>
+  <button class="uk-button uk-button-default" onclick="pjax('./');">後台首頁</button>
+</div>
+<h2>我的文章</h2>
+<div id="list-loading" class="uk-flex uk-flex-center">
+  <div style="width:50px;height:50px;" uk-spinner></div>
+  <div style="margin-left:5px;">
+    <h3>正在抓取資料...</h3>
+</div>
+</div>
+<div id="posts" style="display:none;">
+  <ul class="post-list" id="post-list">
+
+  </ul>
+</div>
+<script language="javascript">
+  $(document).ready(function() {
+    $.ajax({
+     url: "../api/posts.json",
+     type: 'GET',
+      error: function(xhr) {
+        console.error('Ajax request 發生錯誤');
+        $('#context').html('<div style="text-align:center;"><h2>'+xhr.status+'</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+      },
+      success: function(response) {
+        var checkFBtimer = setInterval(function(){
+          try{
+            if(FB){
+              listPosts(response);
+              clearInterval(checkFBtimer);
+            }
+          }catch(e){};
+        }, 100);
+      }
+    });
+  });
+
+  function listPosts(data){
+    var json = data;
+    var posts = null;
+    FB.getLoginStatus(function(res) {
+      FB.api('/me', function(response){
+        for(var i in json.categories){
+          if(json.categories[i].category == response.id){
+            posts = json.categories[i].posts;
+            break;
+          }
+        }
+        if(posts == null){
+          $('#context').html('<div style="text-align:center;"><h2>找不到您所發表的文章</h2><h3>重新整理試試?</h3></div>');
+        }
+        console.log(posts);
+        for(var i in posts){
+          var post = posts[i];
+          var deleteBtnDiv = '<div> <div id="buttons"> <button class="uk-button uk-button-primary uk-button-small" id="editBtn" onclick="window.location=\'editor.html?path='+post.githubPath+'\'">編輯</button> <span id="postPath" style="display:none">'+post.githubPath+'</span> <button class="uk-button uk-button-small uk-button-danger" id="checkDeleteBtn">刪除</button> <span id="toDelete" style="display:none"> 刪除文章後不能復原，真的要刪除? <button class="uk-button uk-button-primary uk-button-small" id="cancleDelete">取消</button> <button class="uk-button uk-button-small uk-button-danger" id="toDeleteBtn">確定刪除</button> </span> </div> <div id="deleteLoading" style="display:none">正在刪除...</div> </div>';
+          if(post.githubPath == undefined){
+            deleteBtnDiv = '';
+          }
+          $("#post-list").append('<li><h2><a target="_blank" class="post-link" href="'+post.url+'">'+post.title+'</a></h2><span class="post-meta">作者 :  '+post.author+' | </span><span class="post-meta">發表於 '+post.date+'</span>'+deleteBtnDiv+'<hr/></li>');
+        }
+        $("#posts").show();
+        $("#list-loading").hide();
+      });
+    });
+  }
+
+  $(document).on('click', '#toDeleteBtn', function(event) {
+    $(this).parent().parent().hide();
+    $(this).parent().parent().parent().find('#deleteLoading').show();
+    var divElement = $(this);
+    var path = $(this).parent().parent().find('#postPath').text();
+    FB.getLoginStatus(function(res) {
+      FB.api('/me', function(response){
+        $.ajax({
+           url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+           type: 'GET',
+           data: {
+             "token" : res.authResponse.accessToken,
+             "action" : "deletePost",
+             "path" : encodeURIComponent(path),
+           },
+            error: function(xhr) {
+              divElement.parent().parent().parent().find('#deleteLoading').text('伺服器發生錯誤，無法刪除文章');
+              console.error('Ajax request 發生錯誤');
+            },
+            success: function(response) {
+              if(response == "false"){
+                divElement.parent().parent().parent().find('#deleteLoading').text('伺服器發生錯誤，無法刪除文章');
+              }else{
+                divElement.parent().parent().parent().parent().fadeOut('1000');
+              }
+            }
+          });
+      });
+    });
+  });
+
+  $(document).on('click', '#checkDeleteBtn', function(event) {
+    $(this).parent().find('#toDelete').show();
+    $(this).hide();
+    $(this).parent().find("#editBtn").hide();
+  });
+
+  $(document).on('click', '#cancleDelete', function(event) {
+    $(this).parent().parent().find('#checkDeleteBtn').show();
+    $(this).parent().parent().find('#editBtn').show();
+    $(this).parent().hide();
+  });
+</script>

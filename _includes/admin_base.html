@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+<html lang="{{ page.lang | default: site.lang | default: "zh-tw" }}">
 
   {% include head.html %}
 
@@ -37,14 +37,17 @@
       }
 
       function getPageName(){
-        var url = window.location;
+        /*var url = window.location;
         if (url){
           var m = url.toString().match(/.*\/(.+?)\./);
           if (m && m.length > 1){
             return m[1];
           }
         }
-        return "";
+        return "";*/
+        var path = window.location.pathname;
+        var page = path.split("/").pop();
+        return page + window.location.search;
       }
 
       function checkUser(){
@@ -78,7 +81,7 @@
         pjax(getPageName());
       });
 
-      function pjax(page){
+      function pjax(page, stopChangeUrl){
         $.ajax({
           xhr: function(){
             var xhr = new window.XMLHttpRequest();
@@ -87,7 +90,17 @@
               if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
                 //Do something with download progress
-                console.log("download : "+percentComplete);
+                $( "#processBar" ).animate({
+                  width: (percentComplete * 100) + '%'
+                }, 100);
+                //console.log("download : "+percentComplete);
+                if(percentComplete == 1){
+                  setTimeout(function(){
+                    $( "#processBar" ).animate({
+                      width: 0 + '%'
+                    }, 0);
+                  }, 600);
+                }
               }
             }, false);
             return xhr;
@@ -100,11 +113,20 @@
               $('#loadingDiv').hide();
             },
             success: function(response) {
+              if(!stopChangeUrl){
+                  history.pushState(null, null, page);
+              }
               $('#context').html(response);
             }
           });
       }
+
+      window.onpopstate = function(e){
+        pjax(getPageName(), true);
+      };
     </script>
+
+    <div id="processBar" class="processBar" style=""></div>
   </body>
 
 </html>

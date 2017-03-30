@@ -1,5 +1,6 @@
 <div id="fb-root"></div>
 <script>
+  var fbAPIready = false;
   window.fbAsyncInit = function() {
     FB.init({
       appId      : '276121856143098',
@@ -9,6 +10,7 @@
     });
     FB.AppEvents.logPageView();
     FB.getLoginStatus(function(response) {
+      fbAPIready = true;
       statusChangeCallback(response);
     });
     FB.Event.subscribe('auth.statusChange', function(response) {

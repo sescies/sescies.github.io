@@ -1,0 +1,28 @@
+---
+permalink: api/posts.json
+---
+{% assign catNum = 0 %}
+{
+  "categories":[
+    {% for tag in site.categories %}
+    {% assign catNum = catNum | plus:1 %}
+    {
+      "category": "{{ tag[0] | capitalize }}",
+      "posts": [
+        {% assign pages_list = tag[1] %} {% assign count = 0 %}
+        {% for post in pages_list %}
+        {% assign count = count | plus:1 %}
+          {
+            "title": "{{ post.title }}",
+            "date": "{{ post.date | date: "%F %X" }}",
+            "url": "{{ site.url }}{{ post.url }}"{% if post.author %},
+            "author": "{{ post.author }}"{% endif %}{% if post.githubPath %},"githubPath": "{{ post.githubPath }}"{% endif %}
+          }{% if count != pages_list.size %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if catNum != site.categories.size %},{% endif %}
+    {% endfor %}
+    {% assign pages_list = nil %}
+    {% assign group = nil %}
+  ]
+}

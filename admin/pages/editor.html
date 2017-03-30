@@ -1,3 +1,15 @@
+            <div class="uk-align-left">
+                <h3 id="modeTitle"></h3>
+            </div>
+            <div class="uk-align-right">
+              <div style="text-align:right;">
+                <button class="uk-button uk-button-primary" onclick="pjax('posts.html');">文章列表</button>
+                <button class="uk-button uk-button-default" onclick="pjax('./');">後台首頁</button>
+              </div>
+            </div>
+
+            <br/>
+
             <div id="alertCover" class="uk-alert-primary" uk-alert style="display:none;">
               <p id="message"></p>
             </div>
@@ -6,12 +18,66 @@
               <p><textarea id="text"></textarea></p>
               <p>
                 <button id="post_button" class="uk-button uk-button-primary" onclick="startUpload();">發表文章</button>
-                <span id="post_loading" style="display:none;"><sapn uk-spinner></sapn>正在發表文章</span>
+                <span id="post_loading" style="display:none;"><sapn uk-spinner></sapn><span id='loadingMsg'>正在發表文章</span></span>
               </p>
             </div>
 
             <script language="javascript">
               tinyMCE.execCommand('mceAddEditor', false, 'text');
+              var toUpdate = false;
+              var postPath = null;
+              var timerCount = 0;
+              var waitFBtimer = setInterval(function(){
+                if(fbAPIready){
+                  if(getParameterByName('path') && getParameterByName('path') != ''){
+                    loadPost(getParameterByName('path'));
+                    postPath = getParameterByName('path');
+                    $("#modeTitle").text('更新文章');
+                  }else{
+                    $("#modeTitle").text('發表文章');
+                  }
+                  clearInterval(waitFBtimer);
+                }else{
+                  timerCount++;
+                  if(timerCount > 100){
+                    $('#context').html('<div style="text-align:center;"><h2>Facebook連線逾時</h2><h3>重新整理試試?</h3></div>');
+                    $('#loadingDiv').hide();
+                    clearInterval(waitFBtimer);
+                  }
+                }
+              }, 100);
+              function loadPost(path){
+                turnOnForm(false, '正在抓取文章');
+                FB.getLoginStatus(function(response) {
+                  $.ajax({
+                     url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
+                     type: 'GET',
+                     data: {
+                       "token" : response.authResponse.accessToken,
+                       "action" : "getPost",
+                       "path" : encodeURIComponent(path)
+                     },
+                      error: function(xhr) {
+                        console.error('Ajax request 發生錯誤');
+                        turnOnForm(false, '');
+                        showMessage('danger', '伺服器發生錯誤，請嘗試重新整理');
+                      },
+                      success: function(res) {
+                        if(res == "false"){
+                          turnOnForm(false, '');
+                          showMessage('danger', '伺服器發生錯誤，請嘗試重新整理');
+                        }else{
+                          var json = JSON.parse(res);
+                          tinyMCE.get('text').setContent(decodeURIComponent(json.content));
+                          $("#post_title").val(decodeURIComponent(json.title));
+                          turnOnForm(true);
+                          toUpdate = true;
+                          $("#post_button").text('更新文章');
+                        }
+                      }
+                    });
+                });
+              }
 
               function startUpload(){
                 $("#alertCover").hide();
@@ -55,42 +121,65 @@
                           raw_url = files[i].raw_url;
                         }
                       }
-                      addNewPost(raw_url, title);
+                      addOrUpdatePost(raw_url, title, postPath);
                     }
                   });
               }
 
-              function addNewPost(gistURL, title){
+              /*
+               * 抓取網址變數
+               * 出自: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+               */
+              function getParameterByName(name, url) {
+                if (!url) {
+                  url = window.location.href;
+                }
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, " "));
+              }
+
+              function addOrUpdatePost(gistURL, title, postPath){
                 FB.getLoginStatus(function(response) {
                   $.ajax({
                      url: "https://script.google.com/macros/s/AKfycbwTO6bb061ID-B-rXF4Agxr8qpAcZjLDO0LVKrewfEsZOV1Yd5P/exec",
                      type: 'GET',
                      data: {
                        "token" : response.authResponse.accessToken,
-                       "action" : "newPost",
+                       "action" : (toUpdate)?"updatePost":"newPost",
+                       "path" : postPath,
                        "gistURL" : encodeURIComponent(gistURL),
                        "title" : title,
                      },
                       error: function(xhr) {
                         console.error('Ajax request 發生錯誤');
-                        $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                        turnOnForm(true);
+                        showMessage('danger', '伺服器發生錯誤，請嘗試重新送出');
                       },
                       success: function(response) {
-                        console.log("GOOGLE");
-                        console.log(response);
                         if(response === "false"){
-                          //$('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+                          turnOnForm(true);
+                          showMessage('danger', '伺服器發生錯誤，請嘗試重新送出');
                         }else{
                           var json = JSON.parse(response);
-                          showMessage('primary', '文章發表成功!<a href="'+json.url+'">檢視文章</a>');
+                          showMessage('primary', '文章發表成功!<a href="posts.html">前往文章列表</a>');
+                          turnOnForm(true);
                         }
                       }
                     });
                 });
               }
 
-              //@Param {boolean} true : 開啟編輯器 ; false : 關閉編輯器
-              function turnOnForm(turnOn){
+              //@Param {boolean} turnOn: true : 開啟編輯器 ; false : 關閉編輯器
+              //@Param {string} message: 等待動畫的訊息
+              function turnOnForm(turnOn, message){
+                if(!message){
+                  message = '正在發表文章';
+                }
+                $("#loadingMsg").text(message);
                 if(turnOn){
                   $("#post_loading").hide();
                   $("#post_title").prop('disabled', false);
