@@ -69,7 +69,7 @@ permalink: admin/login.html
                "action" : "login",
              },
               error: function(xhr) {
-                console.error('Ajax request 發生錯誤');
+                console.error(xhr.state() + ' : Ajax request 發生錯誤');
                 switchTo('context');
                 $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
               },
@@ -104,7 +104,7 @@ permalink: admin/login.html
                "action" : "register",
              },
               error: function(xhr) {
-                console.error('Ajax request 發生錯誤');
+                console.error(xhr.state() + ' : Ajax request 發生錯誤');
                 switchTo('context');
                 $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
               },

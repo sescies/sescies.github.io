@@ -4,10 +4,14 @@ layout: default
 
 <div class="home">
 
-  <h1 class="page-heading">文章</h1>
-
   {{ content }}
 
+  <h1 class="page-heading">文章</h1>
+  {% if paginator.posts %} {% else %}
+  <div style="text-align:center;">
+    <h3>目前還沒有文章!</h3>
+  </div>
+  {% endif %}
   <ul class="post-list">
     {% for post in paginator.posts %}
       <li>
@@ -24,6 +28,7 @@ layout: default
   </ul>
 
   <!-- Pagination links -->
+  {% if paginator.total_pages %}
   <ul class="uk-pagination uk-flex-center" uk-margin>
 	{% if paginator.previous_page %}
     <li><a href="{{ paginator.previous_page_path }}"><span uk-pagination-previous></span>上一頁</a></li>
@@ -37,5 +42,5 @@ layout: default
 	<li class="uk-disabled"><a href="#"><span uk-pagination-next></span>下一頁</a></li>
 	{% endif %}
   </ul>
-
+  {% endif %}
 </div>

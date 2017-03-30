@@ -27,7 +27,7 @@
     {% include facebookLoginAPI.html %}
     <script language="javascript">
       function statusChangeCallback(response){
-        console.log(response);
+        //console.log(response);
         if(response !== null && response.status === 'connected'){
           checkUser();
         }else{
@@ -60,7 +60,7 @@
                "action" : "login",
              },
               error: function(xhr) {
-                console.error('Ajax request 發生錯誤');
+                console.error(xhr.state() + ' : Ajax request 發生錯誤');
                 $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
                 $('#loadingDiv').hide();
               },
@@ -122,7 +122,11 @@
       }
 
       window.onpopstate = function(e){
-        pjax(getPageName(), true);
+        if(getPageName().match(/(.*)editor\.html(.*)/gi)){
+          window.location.replace("./index.html");
+        }else{
+          pjax(getPageName(), true);
+        }
       };
     </script>
 

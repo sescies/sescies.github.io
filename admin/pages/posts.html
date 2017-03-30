@@ -48,9 +48,9 @@
           }
         }
         if(posts == null){
-          $('#context').html('<div style="text-align:center;"><h2>找不到您所發表的文章</h2><h3>重新整理試試?</h3></div>');
+          $('#context').html('<p></p><p style="text-align:center;color:gray;"><span uk-icon="icon: question; ratio: 4"></span></p><div style="text-align:center;"><h2>找不到您所發表的文章</h2><h3>重新整理試試?</h3></div><p style="text-align:center;"><button class="uk-button uk-button-primary" onclick="window.location=\'./editor.html\'">發表文章</button>&nbsp;&nbsp;<button class="uk-button uk-button-default" onclick="pjax(\'./\');">後台首頁</button></p>');
         }
-        console.log(posts);
+        //console.log(posts);
         for(var i in posts){
           var post = posts[i];
           var deleteBtnDiv = '<div> <div id="buttons"> <button class="uk-button uk-button-primary uk-button-small" id="editBtn" onclick="window.location=\'editor.html?path='+post.githubPath+'\'">編輯</button> <span id="postPath" style="display:none">'+post.githubPath+'</span> <button class="uk-button uk-button-small uk-button-danger" id="checkDeleteBtn">刪除</button> <span id="toDelete" style="display:none"> 刪除文章後不能復原，真的要刪除? <button class="uk-button uk-button-primary uk-button-small" id="cancleDelete">取消</button> <button class="uk-button uk-button-small uk-button-danger" id="toDeleteBtn">確定刪除</button> </span> </div> <div id="deleteLoading" style="display:none">正在刪除...</div> </div>';
