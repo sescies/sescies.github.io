@@ -6,6 +6,29 @@ layout: default
 
   {{ content }}
 
+  {% for tag in site.tags %}
+    {% if tag[0] == "至頂" %}
+    <h1 class="page-heading">至頂文章</h1>
+    <ul class="post-list">
+      {% assign pages_list = tag[1] %}
+      {% for post in pages_list %}
+      <li>
+        <h2>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+        </h2>
+        {% if post.author %}
+        <span class="post-meta">作者 :  {{ post.author }} | </span>
+        {% endif %}
+        <span class="post-meta">發表於 {{ post.date | date: "%F %X" }}</span>
+        <hr/>
+      </li>
+      {% endfor %}
+      {% assign pages_list = nil %}
+      {% assign group = nil %}
+    </ul>
+    {% endif %}
+  {% endfor %}
+
   <h1 class="page-heading">文章</h1>
   {% if paginator.posts %} {% else %}
   <div style="text-align:center;">

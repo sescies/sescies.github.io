@@ -15,6 +15,12 @@
             </div>
             <div id="form">
               <p><input id="post_title" class="uk-input" type="text" placeholder="標題"></p>
+              <span id="tagSpan" style="display:none;"> 文章分類 :
+                <select class="uk-select uk-form-width-medium" id="tag">
+                  <option selected="true"></option>
+                  <option>至頂</option>
+                </select>
+              </span>
               <p><textarea id="text"></textarea></p>
               <p>
                 <button id="post_button" class="uk-button uk-button-primary" onclick="startUpload();">發表文章</button>
@@ -29,6 +35,11 @@
               var timerCount = 0;
               var waitFBtimer = setInterval(function(){
                 if(fbAPIready){
+                  FB.api('/me', function(response){
+                    if(response.id == "1487598887931475"){
+                      $("#tagSpan").show();
+                    }
+                  });
                   if(getParameterByName('path') && getParameterByName('path') != ''){
                     loadPost(getParameterByName('path'));
                     postPath = getParameterByName('path');
@@ -55,7 +66,8 @@
                      data: {
                        "token" : response.authResponse.accessToken,
                        "action" : "getPost",
-                       "path" : encodeURIComponent(path)
+                       "path" : encodeURIComponent(path),
+                       "tag" : encodeURIComponent($("#tag").val())
                      },
                       error: function(xhr) {
                         console.error('Ajax request 發生錯誤');
@@ -70,6 +82,9 @@
                           var json = JSON.parse(res);
                           tinyMCE.get('text').setContent(decodeURIComponent(json.content));
                           $("#post_title").val(decodeURIComponent(json.title));
+                          $("select#tag option").filter(function() {
+                            return $(this).text() == decodeURIComponent(json.tag);
+						              }).prop('selected', true);
                           turnOnForm(true);
                           toUpdate = true;
                           $("#post_button").text('更新文章');
