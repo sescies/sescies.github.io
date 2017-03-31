@@ -67,7 +67,6 @@
                        "token" : response.authResponse.accessToken,
                        "action" : "getPost",
                        "path" : encodeURIComponent(path),
-                       "tag" : encodeURIComponent($("#tag").val())
                      },
                       error: function(xhr) {
                         console.error('Ajax request 發生錯誤');
@@ -127,8 +126,8 @@
                       $('#loadingDiv').hide();
                     },
                     success: function(response) {
-                      console.log("GIST");
-                      console.log(response);
+                      /*console.log("GIST");
+                      console.log(response);*/
                       var files = response.files;
                       var raw_url = "";
                       for(var i in files){
@@ -168,6 +167,7 @@
                        "path" : postPath,
                        "gistURL" : encodeURIComponent(gistURL),
                        "title" : title,
+                       "tag" : encodeURIComponent($("#tag").val())
                      },
                       error: function(xhr) {
                         console.error('Ajax request 發生錯誤');
