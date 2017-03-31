@@ -84,6 +84,9 @@
                           $("select#tag option").filter(function() {
                             return $(this).text() == decodeURIComponent(json.tag);
 						              }).prop('selected', true);
+                          $("select#tag option").filter(function() {
+                            return $(this).text() != decodeURIComponent(json.tag);
+						              }).prop('selected', false);
                           turnOnForm(true);
                           toUpdate = true;
                           $("#post_button").text('更新文章');
