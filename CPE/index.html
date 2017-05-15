@@ -1,0 +1,219 @@
+---
+layout: page
+title: 題目解答
+permalink: /CPE/index.html
+---
+
+{% include initFacebookAPI.html %}
+
+<!--google code pretify-->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script src="https://cdn.rawgit.com/google/code-prettify/760e6e73/loader/prettify.js"></script>
+<link rel="stylesheet" href="{{ "/assets/google-code-pretify-tomorrow.min.css" | relative_url }}">
+
+
+<div class="content">
+  <div class="uk-container">
+    <div>
+
+      <div id="loginDiv" style="text-align:center;display:none; margin-top:15%;">
+        <h3>使用Facebook登入</h3>
+        <button class="uk-button uk-button-primary uk-button-large" onclick="fbLogin();"><li uk-icon="icon: facebook;"></li>登入</button>
+      </div>
+
+      <div id="denyDiv" style="text-align:center;display:none; margin-top:15%;">
+        <h2>抱歉，這個Facebook帳號並非社群成員</h2>
+        <h3>您必須申請加入NIU CSIE 程式設計社群Facebook群組才能觀看此頁面。</h3>
+        <p><button class="uk-button uk-button-primary uk-button-large" onclick="window.location='../';">回首頁</button></p>
+        <p><div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="true"></div></p>
+      </div>
+
+      <div id="listDiv" style="text-align:center;display:none;">
+
+      </div>
+
+      <div id="context" style="display:none;">
+        <table style="width: 100%">
+          <tr>
+            <td>
+              <h2 style="margin-bottom:0px;" id="title"> </h2>
+              <span style="font-size:120%;">
+                <span id="date" style="color:gray;">  </span>
+                <span id="uva_id"></span>&nbsp;|&nbsp;
+                <span><a id="url" href="#" target="_blank">開啟題目</a></span>
+              </span>
+            </td>
+            <td><button class="uk-button uk-button-primary" onclick="switchTo('listDiv');history.pushState(null, null, './');">返回列表</button></td>
+          </tr>
+        </table>
+
+        <hr/>
+        <div id="codesDiv">
+
+        </div>
+      </div>
+
+      <div id="loadingDiv" style="text-align:center;">
+        {% include facebook_loading.svg %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include js_include.html %}
+
+{% include facebookLoginAPI.html %}
+<script language="javascript">
+
+  if(getParameterByName('id') && getParameterByName('id') != ''){
+    var timer = setInterval(function(){
+      if(fbAPIready){
+        clearInterval(timer);
+        showCtx(getParameterByName('id'));
+      }
+    }, 100);
+  }
+
+  window.onpopstate = function(e){
+    if(getParameterByName('id') && getParameterByName('id') != ''){
+      showCtx(getParameterByName('id'));
+    }else{
+      switchTo('listDiv');
+    }
+  };
+
+  function switchTo(pattern){
+    var patterns = ["loginDiv", "denyDiv", "context", "loadingDiv", "listDiv"];
+    for(var i = 0; i < patterns.length; i++){
+      if(pattern == patterns[i]){
+        $("#"+patterns[i]).show();
+      }else{
+        $("#"+patterns[i]).hide();
+      }
+    }
+  }
+
+  /*
+   * 抓取網址變數
+   * 出自: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+   */
+  function getParameterByName(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function statusChangeCallback(response){
+    //console.log(response);
+    if(response !== null && response.status === 'connected'){
+      $.ajax({
+         url: "https://script.google.com/macros/s/AKfycbwSSkEqb0m8BUdx9AKzWQn3QkSscoBcgQ3hBv7de-eawZTasMc/exec",
+         type: 'GET',
+         data: {
+           "token" : response.authResponse.accessToken,
+           "request" : "list",
+         },
+          error: function(xhr) {
+            console.error(xhr.state() + ' : Ajax request 發生錯誤');
+            switchTo('context');
+            $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+          },
+          success: function(response) {
+            if(response == "false"){
+              switchTo('denyDiv');
+              return;
+            }
+            var json = JSON.parse(response);
+            //console.log(json);
+
+            var thead = function(title){
+              return $("<thead>").append($('<tr>').append($('<td>', {'colspan' : 4, 'html' : title})));
+            };
+            var td = function(content){
+              return $('<td>', {'html' : content});
+            };
+
+            $("#listDiv").html("");
+
+            for(var i in json.data){
+              var tbody = $("<tbody>");
+              var arr = json.data[i];
+              for(var j = 0; j < arr.length; j++){
+                tbody.append($('<tr>')
+                .append(td(arr[j].ctxID))
+                .append(td(arr[j].id))
+                .append(td(arr[j].title))
+                .append(td('<button class="uk-button uk-button-default" type="button" onclick="showCtx('+arr[j].ctxID+');">解答</button>')));
+              }
+              var table = $("<table>", {"class" : "uk-table uk-table-striped"}).append(thead("<h3>"+i+"</h3>")).append(tbody);
+              $("#listDiv").append(table);
+              $("#listDiv").append('<hr/>');
+            }
+            if(!getParameterByName('id') || getParameterByName('id') == ''){
+              switchTo('listDiv');
+            }
+          }
+        });
+    }else{
+      switchTo('loginDiv');
+    }
+  }
+
+  function showCtx(id){
+    history.pushState(null, null, "./?id="+id);
+    switchTo('loadingDiv');
+    $("#codesDiv").html("");
+    FB.getLoginStatus(function(response) {
+      $.ajax({
+         url: "https://script.google.com/macros/s/AKfycbwSSkEqb0m8BUdx9AKzWQn3QkSscoBcgQ3hBv7de-eawZTasMc/exec",
+         type: 'GET',
+         data: {
+           "token" : response.authResponse.accessToken,
+           "request" : "content",
+           "ctxID" : id,
+         },
+          error: function(xhr) {
+            console.error(xhr.state() + ' : Ajax request 發生錯誤');
+            switchTo('context');
+            $('#context').html('<div style="text-align:center;"><h2>伺服器錯誤!</h2><h3>發生錯誤...重新整理試試?</h3></div>');
+          },
+          success: function(response) {
+            if(response == "false"){
+              switchTo('denyDiv');
+              return;
+            }
+            var json = JSON.parse(response);
+            //console.log(json);
+            $("#title").text(json.title);
+            $("#date").text(json.date);
+            $("#url").prop('href', json.url);
+            $("#uva_id").text(json.id);
+
+            for(var  i = 0; i < json.codes.length; i++){
+              $("#codesDiv").append(
+                $("<h3>", {
+                  "text": "解答 "+(i+1)
+                })
+              ).append(
+                $("<pre>", {
+                  "class": "prettyprint linenums",
+                  "text": json.codes[i]
+                })
+              );
+              prettyPrint();
+            }
+            if(json.codes.length == 0){
+              $("#codesDiv").append('<div style="text-align:center;"><h2>目前沒有解答...</h2><h3>歡迎到社團貢獻你的答案!</h3></div>');
+            }
+            switchTo('context');
+          }
+        });
+    });
+  }
+</script>

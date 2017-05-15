@@ -5,8 +5,8 @@ permalink: /posts/index.html
 ---
 
 {% for tag in site.tags %}
-  {% if tag[0] == "至頂" %}
-  <h1 class="page-heading">至頂文章</h1>
+  {% if tag[0] == "置頂" %}
+  <h1 class="page-heading">置頂文章</h1>
   <ul class="post-list">
     {% assign pages_list = tag[1] %}
     {% for post in pages_list %}

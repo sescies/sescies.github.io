@@ -12,6 +12,7 @@
     FB.getLoginStatus(function(response) {
       fbAPIready = true;
       statusChangeCallback(response);
+      //console.log(response.authResponse.accessToken);
     });
     FB.Event.subscribe('auth.statusChange', function(response) {
       if(response.session){
